@@ -1,0 +1,101 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+import java.security.InvalidParameterException;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Employee;
+
+public class GetAllEmployeesServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+			
+		
+		
+		String sortBy = httpRequest.getParameter(IConstants.SORT_BY_PARAMETER);
+		String deleteEmployeeID = httpRequest.getParameter("deleteEmployeeID");
+		
+		
+		 if (sortBy != null && !sortBy.isEmpty()) {
+			this.sortEmployees(httpRequest, httpResponse, sortBy);
+		}
+		else if (deleteEmployeeID != null && !deleteEmployeeID.isEmpty()) {
+			this.deleteEmployee(httpRequest, httpResponse, deleteEmployeeID);
+		}		
+		else {
+			this.getAllEmployees(httpRequest, httpResponse);
+		}
+	}
+	
+	private void sortEmployees(HttpServletRequest httpRequest, HttpServletResponse httpResponse, 
+			String sortEmployeesBy) throws IOException {
+		
+		List<Employee> sortedEmployees = null;
+		
+		try {
+			if (sortEmployeesBy.equals(IConstants.LAST_NAME_PARAMETER)) {
+				sortedEmployees = Database.sortEmployeesByLastName();
+			}
+			else if (sortEmployeesBy.equals(IConstants.DATE_OF_BIRTH_PARAMETER)) {
+				sortedEmployees = Database.sortEmployeesByDateOfBirth();
+			}
+			else {
+				throw new InvalidParameterException("Employees can be sorted only by Last Name and Date of Birth!");
+			}
+			
+			httpRequest.getSession().setAttribute(IConstants.MATCHED_PARAMETER, sortedEmployees);
+			httpResponse.sendRedirect(IConstants.SEARCH_RESULTS_PAGE + "?sortBy=" + sortEmployeesBy);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void deleteEmployee(HttpServletRequest httpRequest, HttpServletResponse httpResponse, 
+			String deleteEmployeeID) throws IOException {
+		int id = Integer.parseInt(deleteEmployeeID);
+		
+		try {
+			boolean isEmployeeDeleted = Database.deleteEmployee(id);
+			
+			if (isEmployeeDeleted) {
+				httpRequest.getSession().setAttribute(IConstants.ID_PARAMETER, IConstants.DELETED_PARAMETER);
+			}
+			
+			httpResponse.sendRedirect(IConstants.EMPLOYEE_PROFILE_PAGE);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void getAllEmployees(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+		List<Employee> allEmployees = null;
+		
+		try {
+			allEmployees = Database.getAllEmployees();
+			
+			httpRequest.getSession().setAttribute(IConstants.ALL_EMPLOYEES_PARAMETER, allEmployees);
+			
+			RequestDispatcher dispatcher = httpRequest
+					.getRequestDispatcher(IConstants.SHOW_ALL_EMPLOYEES_PAGE);
+			
+			dispatcher.forward(httpRequest, httpResponse);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

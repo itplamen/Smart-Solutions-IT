@@ -1,0 +1,37 @@
+<%@tag import="bg.jwd.contracts.IConstants"%>
+
+<%@ attribute name="sectionTitle" %>
+
+<section>
+	<h2>${sectionTitle}</h2>
+	
+	<!-- Info Message -->
+	<div class="infoMessageBox">
+		<img src="images/info.png" alt="Info Image" />
+		<
+	</div>
+	
+	<p class="infoText">To perform Update and Delete operations:</p>
+        			
+	<ul id="UpdateDeleteEmployeeStepsUL">
+		<li>Search for certain employee by name, e-mail, telephone number ... </li>
+		<li>Click on the result to see the employee's profile.</li>
+		<li>Then click on the buttons 'Update' and 'Delete'.</li>
+	</ul>
+				
+	<p class="infoText">You need to be logged in as <span class="boldText">Administrator!</span></p>
+	<p class="infoText">Username: <%= IConstants.ADMIN_USERNAME %>, 
+	Password: <%= IConstants.ADMIN_PASSWORD %></p>	
+
+	<form method="post" action="AuthenticationServlet" id="AuthenticationForm">
+		<label for="UsernameTextField">Username:</label>
+		<input type="text" id="UsernameTextField" name="<%= IConstants.USERNAME_PARAMETER %>" required />
+		<br/>
+					
+		<label for="PasswordTextField">Password:</label>
+		<input type="password" id="PasswordTextField" name="<%= IConstants.PASSWORD_PARAMETER %>" required /> 
+		<br/>
+					
+		<input type="submit" value="Login" id="LoginButton"/>
+	</form>
+</section>

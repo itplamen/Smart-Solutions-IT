@@ -1,0 +1,73 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+
+public class DeleteEmployeeServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String employeeID = httpRequest.getParameter(IConstants.DELETE_ID_PARAMETER);
+		
+		if (employeeID != null && !employeeID.isEmpty()) {	
+			int id = Integer.parseInt(employeeID);
+			
+			try {
+				boolean isEmployeeDeleted = Database.deleteEmployee(id);
+				
+				if (isEmployeeDeleted) {
+					httpRequest.getSession().setAttribute(IConstants.SELECTED_EMPLOYEE_PARAMETER, null);
+					httpResponse.sendRedirect("/SmartSolutions/Employees/Profile/" + id);
+				}
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}	
+	}
+	
+	@Override
+	protected void doDelete(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String employeeID = httpRequest.getParameter(IConstants.DELETE_ID_PARAMETER);
+		int firstSlash = employeeID.indexOf("/", 1);
+		
+		employeeID = employeeID.substring(0, firstSlash);
+		
+		if (employeeID != null && !employeeID.isEmpty()) {	
+			int id = Integer.parseInt(employeeID);
+			
+			try {
+				boolean isEmployeeDeleted = Database.deleteEmployee(id);
+				String success = "{ \"success\": true }";
+				
+				if (isEmployeeDeleted) {
+					httpRequest.getSession().setAttribute(IConstants.SELECTED_EMPLOYEE_PARAMETER, null);
+					httpResponse.sendRedirect("/SmartSolutions/Employees/Profile/" + id);
+				}
+				else {
+					
+				}
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}	
+		
+		httpResponse.setContentType("application/json"); 
+	    httpResponse.setCharacterEncoding("utf-8");
+	    httpResponse.getWriter().println(success);
+	}
+}

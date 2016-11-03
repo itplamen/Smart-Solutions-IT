@@ -1,0 +1,9 @@
+package bg.jwd.data;
+
+import bg.jwd.models.Employee;
+
+public class EmployeeUtils {
+	public static Employee createNewEmployeeModel() {
+		
+	}
+}

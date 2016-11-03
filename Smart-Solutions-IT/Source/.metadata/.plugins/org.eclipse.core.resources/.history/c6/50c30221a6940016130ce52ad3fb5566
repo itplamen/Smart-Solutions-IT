@@ -1,0 +1,52 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+
+public class DeleteEmployeeServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void doDelete(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String employeeID = httpRequest.getParameter(IConstants.DELETE_ID_PARAMETER);
+		int firstSlash = employeeID.indexOf("/", 1);
+		
+		employeeID = employeeID.substring(0, firstSlash);
+		
+		if (employeeID != null && !employeeID.isEmpty()) {	
+			int id = Integer.parseInt(employeeID);
+			
+			try {
+				boolean isEmployeeDeleted = Database.deleteEmployee(id);
+				
+				httpResponse.setContentType("application/json"); 
+			    httpResponse.setCharacterEncoding("utf-8");
+				
+			    if (isEmployeeDeleted) {
+			    	String success = "{ \"success\": true }";
+			    	
+					httpRequest.getSession().setAttribute(IConstants.SELECTED_EMPLOYEE_PARAMETER, null);
+				    httpResponse.getWriter().println(success);
+				}
+				else {
+					// If you just response with invalid JSON, the ajax error function
+					// will be executed.
+					httpResponse.getWriter().println(error);
+				}
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}	
+	}
+}

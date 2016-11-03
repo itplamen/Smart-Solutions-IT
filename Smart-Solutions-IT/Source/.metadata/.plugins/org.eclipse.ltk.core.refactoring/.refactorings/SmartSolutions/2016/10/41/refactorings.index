@@ -1,0 +1,51 @@
+1475654805100	Delete element
+1475654934268	Delete element
+1475654967870	Rename resource 'Add.jsp'
+1475655372376	Rename type 'AddEmployeeFilter'
+1475655561477	Rename type 'AddFilter'
+1475664807132	Rename local variable 'telephoneNumber'
+1475664828591	Rename method 'isTelephoneNumberValid'
+1475664841756	Rename field 'VALID_TELEPHONE_NUMBER_REGEX'
+1475666405574	Copy package
+1475666413607	Delete elements
+1475666970113	Rename type 'DatabaseConnection'
+1475671741936	Rename local variable 'create'
+1475705396453	Delete element
+1475707621075	Delete element
+1475708356606	Rename resource 'AddEmployees.tag'
+1475708513075	Rename resource 'HomePageSection'
+1475708686276	Delete element
+1475709689904	Rename resource 'AddEmployeesSection.tag'
+1475711193011	Rename resource 'LoginSection'
+1475741281424	Rename local variable 'set'
+1475742558571	Rename resource 'GetAllEmployees.jsp'
+1475742623573	Rename field 'GET_ALL_EMPLOYEES_PAGE'
+1475743837981	Delete element
+1475771593977	Delete element
+1475832579681	Rename local variable 'matches'
+1475835400113	Rename field 'URL'
+1475839323473	Rename local variable 'addEmployee'
+1475843445472	Rename field 'defaultTowns'
+1475843463943	Rename field 'defaultDepartments'
+1475859461986	Rename local variable 'allEmployees'
+1475859469563	Rename local variable 'arrayList'
+1475861902570	Rename local variable 'result'
+1475880425732	Rename type 'Town'
+1475880502313	Rename field 'town'
+1475880511105	Rename local variable 'town'
+1475880526542	Rename method 'getTown'
+1475880532471	Rename local variable 'town'
+1475880555834	Rename method 'setTown'
+1475880641661	Rename method 'createTownsTable'
+1475880871239	Rename method 'createGenderTable'
+1475880881032	Rename method 'createEmployeeTable'
+1475881539892	Rename local variable 'townID'
+1475881632189	Rename local variable 'town'
+1475881764794	Rename local variable 'townIndex'
+1475881865123	Rename local variable 'genderIndex'
+1475881873794	Rename local variable 'departmentIndex'
+1475882282719	Rename local variable 'addTown'
+1475919227271	Rename local variable 'employeeSearchParameter'
+1475940168560	Move 'jquery-2.1.3.min.js' to 'META-INF'
+1475940183732	Move 'jquery-2.1.3.min.js' to 'pages'
+1475966528129	Delete element

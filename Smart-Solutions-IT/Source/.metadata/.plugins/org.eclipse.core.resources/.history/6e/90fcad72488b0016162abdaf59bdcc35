@@ -1,0 +1,49 @@
+package bg.jwd.filters;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebFilter(urlPatterns = "/pages/*")
+public class AccessPageFilter implements Filter {
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+			throws IOException, ServletException {
+		
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+		String username = httpRequest.getParameter("username");
+		PrintWriter out = httpResponse.getWriter();
+	    String a = httpRequest.getRequestURI();
+	    //out.write(HtmlConsts.BODY_OPEN);
+		if (httpRequest.getRequestURI().equals("/SmartSolutions/pages/AddEmployee.jsp")) {
+			//out.pr	
+		}
+				
+		filterChain.doFilter(request, response);
+	}
+
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

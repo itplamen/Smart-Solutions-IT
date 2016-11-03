@@ -1,0 +1,45 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.data.Database;
+import bg.jwd.models.Employee;
+
+public class SearchEmployeesServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String search = httpRequest.getParameter(IConstants.SEARCH_PARAMETER);
+		
+		if (search != null && !search.isEmpty()) {
+			List<Employee> matchedEmployees = null;
+			
+			try {
+				matchedEmployees = Database.searchEmployees(search);
+				
+				httpRequest.getSession().setAttribute(IConstants.MATCHED_PARAMETER, matchedEmployees);
+				httpRequest.getSession().setAttribute(IConstants.SEARCH_PARAMETER, search);
+
+				RequestDispatcher dispatcher = httpRequest
+						.getRequestDispatcher(IConstants.SEARCH_RESULTS_PAGE + "?search=" + search);
+				
+				dispatcher.forward(httpRequest, httpResponse);
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}

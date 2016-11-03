@@ -1,0 +1,48 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+import java.security.InvalidParameterException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Employee;
+
+public class SortEmployeesServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String sortBy = httpRequest.getParameter(IConstants.SORT_BY_PARAMETER);
+		
+		if (sortBy != null && !sortBy.isEmpty()) {
+			List<Employee> sortedEmployees = null;
+			
+			try {
+				if (sortBy.equals(IConstants.LAST_NAME_PARAMETER)) {
+					sortedEmployees = Database.sortEmployeesByLastName();
+				}
+				else if (sortBy.equals(IConstants.DATE_OF_BIRTH_PARAMETER)) {
+					sortedEmployees = Database.sortEmployeesByDateOfBirth();
+				}
+				else {
+					throw new InvalidParameterException("Employees can be sorted only by Last Name and Date of Birth!");
+				}
+				
+				httpRequest.getSession().setAttribute(IConstants.MATCHED_PARAMETER, sortedEmployees);
+				httpResponse.sendRedirect("/Employees/Search" + "?sortBy=" + sortBy);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}

@@ -1,0 +1,48 @@
+$(document).ready(function() {
+	'use strict';
+	
+	var $submitEmployeeForm = $('#SubmitEmployeeForm'),
+		$submitEmployeeBtn = $('#SubmitEmployeeBtn');
+
+	$('#SortEmployeesSelect').change(function() {
+		var servletURL = $(this).find(':selected').val();
+		
+		if (servletURL.length > 0) {
+			document.location.href = servletURL;
+		}
+	});
+
+	$(function() {
+		$('#dialog-confirm').dialog({
+			autoOpen: false,
+			resizable: false,
+			height: 'auto',
+			width: 400,
+			modal: true,
+			buttons: {
+				'Delete': function() {
+					var url = $('#DeleteEmployeeHref').attr('href');
+					
+					HttpRequest.deleteEmployee(url)
+						.then(function(data) {
+							document.location = url;
+							alert('Success');
+						},
+			            function(data) {
+			                alert('Error! Cannot delete employee!');
+						});
+					
+					$(this).dialog('close');
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+		
+		$('#DeleteEmployeeHref').on('click', function(event) {
+			event.preventDefault();  
+			$('#dialog-confirm').dialog('open');
+		});
+	});
+});

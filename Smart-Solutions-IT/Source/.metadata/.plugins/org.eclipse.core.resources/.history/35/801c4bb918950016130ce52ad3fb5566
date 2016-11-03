@@ -1,0 +1,98 @@
+package bg.jwd.filters;
+
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+
+@WebFilter({"/AddEmployeeServlet", "/Employeaaaes/Update/*"})
+public class AddEmployeeFilter implements Filter {
+
+	private static final Pattern VALID_PHONE_NUMBER_REGEX = Pattern.compile("[0-9]+");
+	private static final Pattern VALID_EMAIL_ADDRESS_REGEX = 
+		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+	
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+			throws IOException, ServletException {
+
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		
+		String phoneNumber = httpRequest.getParameter(IConstants.PHONE_NUMBER_PARAMETER);
+		String emailAddress = httpRequest.getParameter(IConstants.EMAIL_ADDRESS_PARAMETER);
+		
+		if (this.isEmailAddressValid(emailAddress) && !this.isEmailAddressAlreadyExists(emailAddress) &&
+				this.isPhoneNumberValid(phoneNumber)) {
+			
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
+		if (!isPhoneNumberValid(phoneNumber)) {
+			httpRequest.getSession().setAttribute(IConstants.PHONE_NUMBER_PARAMETER, IConstants.INVALID_PARAMETER);
+		}
+		
+		if (!isEmailAddressValid(emailAddress)) {
+			httpRequest.getSession().setAttribute(IConstants.EMAIL_ADDRESS_PARAMETER, IConstants.INVALID_PARAMETER);
+		}
+		
+		if (this.isEmailAddressAlreadyExists(emailAddress)) {
+			httpRequest.getSession().setAttribute(IConstants.EMAIL_ADDRESS_PARAMETER, IConstants.EMAIL_ALREADY_EXISTS);
+		}
+		
+		RequestDispatcher dispatcher = httpRequest
+				.getRequestDispatcher(IConstants.ADD_EMPLOYEE_PAGE);
+		dispatcher.forward(httpRequest, httpResponse);
+	}
+
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+	private boolean isPhoneNumberValid(String phoneNumber) {
+		if (phoneNumber != null && !phoneNumber.isEmpty()) {
+			Matcher matcher = VALID_PHONE_NUMBER_REGEX.matcher(phoneNumber);
+			return matcher.find();
+		}
+		
+		return true;
+	}
+	
+	private boolean isEmailAddressValid(String emailAddress) {
+		Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailAddress);
+        return matcher.find();
+	}
+	
+	private boolean isEmailAddressAlreadyExists(String emailAddress) {
+		boolean isExists = false;
+		
+		try {
+			isExists = Database.isEmailAddressAlreadyExists(emailAddress);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return isExists;
+	}
+}

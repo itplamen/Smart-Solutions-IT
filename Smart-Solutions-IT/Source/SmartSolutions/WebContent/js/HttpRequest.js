@@ -1,0 +1,46 @@
+var HttpRequest = (function($) {
+	'use strict';
+	
+	var headers = {
+			Accept: 'text/plain'
+		}, 
+		csrfParameter = '${_csrf.parameterName}',
+		csrfToken = '${_csrf.token}',
+		jsonParams = {},
+		httpRequest; 
+	
+    jsonParams['parentId'] = 1;
+    jsonParams[csrfParameter] = csrfToken;
+	
+	httpRequest = function(url, type) {
+		var $deferred = $.Deferred();
+			
+		$.ajax({
+			url: url,
+			type: type,
+			headers: headers,
+			cache: false,
+			data: jsonParams,
+			dataType: 'json',
+			contentType: 'application/json',
+			timeout: 15000,
+			success: function(data) {
+				$deferred.resolve(data);
+			},
+			error: function(error) {
+				$deferred.reject(error);
+			}
+		});
+		 
+		return $deferred.promise();
+	}
+	
+	function deleteEmployee(url) {
+		var empNo = 9870;
+		return httpRequest(url + '/'  + empNo, 'DELETE');
+	}
+		
+	return {
+		deleteEmployee: deleteEmployee
+	};
+}(jQuery));

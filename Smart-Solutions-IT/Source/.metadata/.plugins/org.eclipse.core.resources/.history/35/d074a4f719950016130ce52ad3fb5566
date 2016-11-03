@@ -1,0 +1,51 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Department;
+import bg.jwd.models.Employee;
+import bg.jwd.models.Gender;
+
+public class AddEmployeeServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		try {
+			String firstName = httpRequest.getParameter(IConstants.FIRST_NAME_PARAMETER);
+			String lastName = httpRequest.getParameter(IConstants.LAST_NAME_PARAMETER);
+			String jobPosition = httpRequest.getParameter(IConstants.JOB_POSITION_PARAMETER);
+			String selectedDepartment = httpRequest.getParameter(IConstants.DEPARTMENT_PARAMETER);
+			String selectedGender = httpRequest.getParameter(IConstants.GENDER_PARAMETER);
+			String dateOfBirth = httpRequest.getParameter(IConstants.DATE_OF_BIRTH_PARAMETER);
+			String phoneNumber = httpRequest.getParameter(IConstants.PHONE_NUMBER_PARAMETER);
+			String emailAddress = httpRequest.getParameter(IConstants.EMAIL_ADDRESS_PARAMETER);
+			
+			Department department = Department.valueOf(this.selectedDepartment);
+			Gender gender = Gender.valueOf(selectedGender);
+
+			Employee newEmployee = new Employee(this.firstName, this.lastName, this.jobPosition, 
+					this.department, this.gender, this.dateOfBirth, this.phoneNumber, this.emailAddress); 
+					
+			Database.addEmployee(newEmployee);
+			
+			httpRequest.getSession().setAttribute(IConstants.PHONE_NUMBER_PARAMETER, this.phoneNumber);
+			httpRequest.getSession().setAttribute(IConstants.EMAIL_ADDRESS_PARAMETER, this.emailAddress);
+
+			httpResponse.sendRedirect(httpRequest.getContextPath() + IConstants.ADD_EMPLOYEE_PAGE);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

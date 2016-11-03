@@ -1,0 +1,478 @@
+package bg.jwd.data;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.models.Department;
+import bg.jwd.models.Employee;
+import bg.jwd.models.Gender;
+
+public final class Database {
+	
+	private static final String DRIVER = "com.mysql.jdbc.Driver";
+	private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/SmartSolutionsDB";
+	private static final String USERNAME = "root";
+	private static final String PASSWORD = "1234";
+	
+	private static final int MALE_GENDER_ID = 1;
+	private static final int FEMALE_GENDER_ID = 2;
+	
+	private static final Employee[] DEFAULT_EMPLOYEES = 
+	{
+		new Employee("Ivan", "Ivanov", ".Net Developer", Department.Engineering, Gender.Male, "1990-02-22", "0881331", "ivan@abv.bg"),
+		new Employee("Hristo", "Dekov", "", Department.Engineering, Gender.Male, "1972-04-13", "", "hd@gmail.com"),
+		new Employee("Maria", "Petrova", "Vice President", Department.Purchasing, Gender.Female, "1980-10-22", "089913", "maria@gmail.com"),
+		new Employee("Stoyan", "Stefanov", "Production Technician", Department.Production, Gender.Male, "1988-05-06", "", "ss@mail.com"),
+		new Employee("Kiril", "Dimitrov", "", Department.Human_Resources, Gender.Male, "1970-12-22",  "", "kiro@yahoo.com"),
+		new Employee("Tanya", "Petkova", "Stocker", Department.Marketing, Gender.Female, "1986-06-05", "000131", "tanya@petkova.com"),
+		new Employee("Nikolay", "Veselinov", "CEO", Department.Finance, Gender.Male, "1963-11-11", "", "niki@gmail.com"),
+		new Employee("Gergana", "Kasheva", "QA Technician", Department.Quality_Assurance, Gender.Female, "1971-11-17", "", "geri@gmail.com"),
+		new Employee("Kosta", "Kostov", ".Net Developer", Department.Engineering, Gender.Male, "1990-02-22", "0881331", "kosta@abv.bg"),
+		new Employee("Hristo", "Hristov", "CFO", Department.Engineering, Gender.Male, "1972-04-13", "", "ico@gmail.com"),
+		new Employee("Alexandra", "Gateva", "Administrator", Department.Engineering, Gender.Female, "1980-10-22", "089913", "alex@gmail.com"),
+		new Employee("Spas", "Spasov", "", Department.Production, Gender.Male, "1988-05-06", "", "spas@mail.com"),
+		new Employee("Boris", "Bokov", "Trainee", Department.Human_Resources, Gender.Male, "1999-12-22",  "", "boris@yahoo.com"),
+		new Employee("Tanya", "Tosheva", "Trainee", Department.Marketing, Gender.Female, "1996-06-05", "13012301", "tosheva@petkova.com"),
+		new Employee("Kiril", "Veselinov", "", Department.Finance, Gender.Male, "1963-11-11", "", "kveselinov@gmail.com"),
+		new Employee("Greta", "Bratova", "JavaScript Developer", Department.Quality_Assurance, Gender.Female, "1971-11-17", "", "greta@gmail.com")
+	};
+	
+	private static Connection connection;
+	
+	private Database() {
+		
+	}
+	
+	public static Connection getConnection() throws Exception {
+		if (connection == null) {
+			try {
+				Class.forName(DRIVER);
+				connection = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+			createGendersTable();
+			createDepartmentsTable();
+			createEmployeesTable();
+			
+			if (isEmployeeTableEmpty()) {
+				addDefauëtGenders();
+				addDefaultDepartments();
+				addDefaultEmployees();
+			}
+		}
+		
+		return connection;
+	}
+	
+	public static void addEmployee(Employee employee) throws Exception {
+		try {
+			int departmentID = getDepartmentID(employee.getDepartment());
+			int genderID = getGenderID(employee.getGender());
+			
+			PreparedStatement addEmployee = getConnection()
+					.prepareStatement(
+							"INSERT INTO Employees (FirstName, LastName, JobPosition, " +
+							"DepartmentID, GenderID, DateOfBirth, PhoneNumber, EmailAddress) " + 
+							"VALUES ('" + employee.getFirstName() + "', '" + employee.getLastName() + 
+							"', '" + employee.getJobPosition() + "', '" + departmentID + "', '" + 
+							genderID + "', STR_TO_DATE('" + employee.getDateOfBirth() + "','%Y-%m-%d'), '" + 
+							employee.getPhoneNumber() + "', '" + employee.getEmailAddress() + "')"
+					);
+					
+			addEmployee.executeUpdate();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static List<Employee> getAllEmployees() throws Exception {
+		ArrayList<Employee> employees = new ArrayList<Employee>();
+		
+		try {
+			PreparedStatement getAllEmployees = getConnection()
+					.prepareStatement(
+							"SELECT e.EmployeeID, e.FirstName, e.LastName, e.JobPosition, d.Name AS Department, " +
+									"g.Name AS Gender, e.DateOfBirth, e.PhoneNumber, e.EmailAddress " + 
+							"FROM Employees e " +
+							"JOIN Departments d " +
+								"ON e.DepartmentID = d.DepartmentID " + 
+							"JOIN Genders g " +
+								"ON e.GenderID = g.GenderID "
+					);
+			
+			ResultSet resultSet = getAllEmployees.executeQuery();
+			
+			while (resultSet.next()) {	
+				employees.add(getDataForEmpoyee(resultSet));
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return employees;
+	}
+	
+	public static Employee getEmployee(int id) throws Exception {
+		Employee employee = null;
+		
+		try {
+			PreparedStatement getEmployee = getConnection()
+					.prepareStatement(
+							"SELECT e.EmployeeID, e.FirstName, e.LastName, e.JobPosition, d.Name AS Department, " +
+									"g.Name AS Gender, e.DateOfBirth, e.PhoneNumber, e.EmailAddress " + 
+							"FROM Employees e " +
+							"JOIN Departments d " +
+								"ON e.DepartmentID = d.DepartmentID " + 
+							"JOIN Genders g " +
+								"ON e.GenderID = g.GenderID " +
+							"WHERE EmployeeID = " + id); 
+			
+			ResultSet resultSet = getEmployee.executeQuery();
+			int numberOfRecords = 0;
+			
+			while (resultSet.next()) {
+				numberOfRecords++;
+				
+				if (numberOfRecords > 1) {
+					throw new IndexOutOfBoundsException("There are more than one employee with ID " + id + "!");
+				}
+				
+				employee = getDataForEmpoyee(resultSet);
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return employee;
+	}
+	
+	public static List<Employee> searchEmployees(String searchParameter) throws Exception {
+		ArrayList<Employee> employees = new ArrayList<Employee>();
+		String search = "'%" + searchParameter + "%'";
+		
+		try {
+			PreparedStatement searchEmployees = getConnection()
+					.prepareStatement(
+							"SELECT e.EmployeeID, e.FirstName, e.LastName, e.JobPosition, d.Name AS Department, " +
+									"g.Name AS Gender, e.DateOfBirth, e.PhoneNumber, e.EmailAddress " + 
+							"FROM Employees e " +
+							"JOIN Departments d " +
+								"ON e.DepartmentID = d.DepartmentID " + 
+							"JOIN Genders g " +
+								"ON e.GenderID = g.GenderID " +
+							"WHERE FirstName LIKE " + search + " OR LastName LIKE " + search + " OR " +
+						    	   "JobPosition LIKE " + search + " OR d.Name LIKE " + search + " OR " +
+						    	   "g.Name LIKE " + search + " OR DateOfBirth LIKE " + search + " OR " + 
+						    	   "PhoneNumber LIKE " + search + " OR EmailAddress LIKE " + search
+					);
+			
+			ResultSet resultSet = searchEmployees.executeQuery();
+			
+			while (resultSet.next()) {	
+				employees.add(getDataForEmpoyee(resultSet));
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return employees;
+	}
+	
+	public static boolean deleteEmployee(int id) throws Exception {
+		try {
+			PreparedStatement deleteEmployee = getConnection()
+					.prepareStatement(
+							"DELETE FROM Employees " + 
+							"WHERE EmployeeID = " + id
+					); 
+			
+			deleteEmployee.executeUpdate();
+
+			if (getEmployee(id) == null) {
+				return true;
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public static void updateEmployee(int id, Employee employee) throws Exception {
+		try {
+			
+			int departmentID = getDepartmentID(employee.getDepartment());
+			int genderID = getGenderID(employee.getGender());
+			
+			PreparedStatement updateEmployee = getConnection()
+					.prepareStatement(
+							"UPDATE Employees " + 
+							"SET FirstName='" + employee.getFirstName() + "', " + 
+								 "LastName='" + employee.getLastName() + "', " + 
+								 "JobPosition='" + employee.getJobPosition() + "', " + 
+								 "DepartmentID='" + departmentID + "', GenderID='" + genderID + "', " + 
+								 "DateOfBirth='" + employee.getDateOfBirth() + "', " + 
+								 "PhoneNumber='" + employee.getPhoneNumber() + "', " + 
+								 "EmailAddress='" + employee.getEmailAddress() + "' " +
+							"WHERE EmployeeID='" + id + "'"
+					);
+					
+			updateEmployee.executeUpdate();
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static List<Employee> sortEmployeesByLastName() throws Exception {
+		return sortEmployees("LastName");
+	}
+	
+	public static List<Employee> sortEmployeesByDateOfBirth() throws Exception {
+		return sortEmployees("DateOfBirth");
+	}
+
+	private static boolean isEmployeeTableEmpty() throws Exception {
+		
+	}
+	
+	private static void createGendersTable() throws Exception {
+		try {
+			PreparedStatement createTable = getConnection()
+					.prepareStatement(
+							"CREATE TABLE IF NOT EXISTS Genders" +
+							"(GenderID int NOT NULL AUTO_INCREMENT, " +
+							"Name varchar(6) NOT NULL, " +
+							"PRIMARY KEY(GenderID))"
+					);
+			
+			createTable.executeUpdate();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void createDepartmentsTable() throws Exception {
+		try {
+			PreparedStatement createTable = getConnection()
+					.prepareStatement(
+							"CREATE TABLE IF NOT EXISTS Departments" +
+							"(DepartmentID int NOT NULL AUTO_INCREMENT, " +
+							"Name varchar(50) NOT NULL, " +
+							"PRIMARY KEY(DepartmentID))"
+					);
+			
+			createTable.executeUpdate();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static boolean isEmailAddressAlreadyExists(String emailAddress) throws Exception {
+		try {
+			PreparedStatement numberOfMatchedEmails = getConnection()
+					.prepareStatement(
+							"SELECT COUNT(*) AS Total " + 
+							"FROM Employees " + 
+							"WHERE EmailAddress = " + "'" + emailAddress + "'"	
+					);
+			ResultSet resultSet = numberOfMatchedEmails.executeQuery();
+			
+			while (resultSet.next()) {
+				int total = Integer.parseInt(resultSet.getString("Total"));
+				
+				if (total > 0) {
+					return true;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	private static void createEmployeesTable() throws Exception {
+		try {
+			PreparedStatement createTable = getConnection()
+					.prepareStatement("CREATE TABLE IF NOT EXISTS Employees" +
+							"(EmployeeID int NOT NULL AUTO_INCREMENT, " +
+							"FirstName varchar(50) NOT NULL, " +
+							"LastName varchar(50) NOT NULL, " +
+							"JobPosition varchar(50), " +
+							"DepartmentID int NOT NULL, " +
+							"GenderID int NOT NULL, " + 
+							"DateOfBirth Date NOT NULL, " + 
+							"PhoneNumber varchar(50), " +
+							"EmailAddress varchar(50) NOT NULL, " +
+							"PRIMARY KEY(EmployeeID), " + 
+							"FOREIGN KEY (DepartmentID) REFERENCES Departments (DepartmentID), " + 
+							"FOREIGN KEY (GenderID) REFERENCES Genders (GenderID), " + 
+							"CONSTRAINT uniqueEmail UNIQUE (EmailAddress))");
+			
+			createTable.executeUpdate();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void addDefauëtGenders() throws Exception {
+		try {
+			PreparedStatement addGender = getConnection()
+					.prepareStatement("INSERT INTO Genders (Name) VALUES ('" + Gender.Male + "')");
+
+			addGender.executeUpdate();
+			
+			PreparedStatement addGenderaa = getConnection()
+					.prepareStatement("INSERT INTO Genders (Name) VALUES ('" + Gender.Female + "')");
+			
+			addGenderaa.executeUpdate();
+
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void addDepartment(Department department) {
+		try {
+			PreparedStatement addDepartment = getConnection()
+					.prepareStatement("INSERT INTO Departments (Name) VALUES ('" + department + "')");
+					
+			addDepartment.executeUpdate();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void addDefaultDepartments() {
+		try {
+			for (Department department : IConstants.DEFAULT_DEPARTMENTS) {
+				addDepartment(department);
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void addDefaultEmployees() {
+		try {
+			for (Employee employee : DEFAULT_EMPLOYEES) {
+				addEmployee(employee);
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static List<Employee> sortEmployees(String sortByColumn) throws Exception {
+		ArrayList<Employee> employees = new ArrayList<Employee>();
+		
+		try {
+			PreparedStatement sortEmployees = getConnection()
+					.prepareStatement(
+							"SELECT e.EmployeeID, e.FirstName, e.LastName, e.JobPosition, d.Name AS Department, " +
+									"g.Name AS Gender, e.DateOfBirth, e.PhoneNumber, e.EmailAddress " + 
+							"FROM Employees e " +
+							"JOIN Departments d " +
+								"ON e.DepartmentID = d.DepartmentID " + 
+							"JOIN Genders g " +
+								"ON e.GenderID = g.GenderID " +
+							"ORDER BY " + sortByColumn + " ASC"
+					);
+					
+			ResultSet resultSet = sortEmployees.executeQuery();
+			
+			while (resultSet.next()) {	
+				employees.add(getDataForEmpoyee(resultSet));
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return employees;
+	}	
+	
+	private static int getDepartmentID(Department department) {
+		return Arrays
+				.asList(IConstants.DEFAULT_DEPARTMENTS)
+				.indexOf(department) + 1;
+	}
+	
+	private static int getGenderID(Gender gender) {
+		int genderID = 0;
+		
+		if (gender.equals(Gender.Male)) {
+			genderID = MALE_GENDER_ID;
+		}
+		else if (gender.equals(Gender.Female)) {
+			genderID = FEMALE_GENDER_ID;
+		}
+		else {
+			throw new IndexOutOfBoundsException("Invalid gender!");
+		}
+		
+		return genderID;
+	}
+	
+	private static boolean isTableEmpty(String idColumn, String table) throws Exception {
+		try {
+			PreparedStatement isTableEmpty = getConnection()
+					.prepareStatement("SELECT " + idColumn + " FROM " + table);
+			
+			ResultSet resultSet = isTableEmpty.executeQuery();
+		
+			int counter = 0;
+			while (resultSet != null && resultSet.next()) {
+				counter++;
+				
+				if (counter > 0) {
+					return false;
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return true
+	}
+	
+	private static Employee getDataForEmpoyee(ResultSet resultSet) throws Exception {
+		int employeeID = Integer.parseInt(resultSet.getString("EmployeeID"));
+		Department department = Department.valueOf(resultSet.getString("Department"));
+		Gender gender = Gender.valueOf(resultSet.getString("Gender"));
+		
+		Employee employee = new Employee(
+				resultSet.getString("FirstName"), resultSet.getString("LastName"), 
+				resultSet.getString("JobPosition"), department , gender, 
+				resultSet.getString("DateOfBirth"), resultSet.getString("PhoneNumber"), 
+				resultSet.getString("EmailAddress")
+		);
+		
+		employee.setID(employeeID);
+		return employee;
+	}
+}

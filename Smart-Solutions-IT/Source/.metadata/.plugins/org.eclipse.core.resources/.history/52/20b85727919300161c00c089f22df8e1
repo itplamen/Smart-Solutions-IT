@@ -1,0 +1,60 @@
+$(document).ready(function() {
+	'use strict';
+	
+	var $submitEmployeeForm = $('#SubmitEmployeeForm'),
+		$submitEmployeeBtn = $('#SubmitEmployeeBtn'),
+		currentPage = document.location.href;
+	
+	if (currentPage === 'http://localhost:8085/SmartSolutions/Employees/Add') {
+		$submitEmployeeBtn.attr('value', 'Add');
+		
+		HttpRequest.addEmployee('http://localhost:8085/SmartSolutions/Employees/Add')
+	}
+	else if (currentPage === 'http://localhost:8085/SmartSolutions/Employees/Update/') {
+		$submitEmployeeBtn.attr('value', 'Update');
+	}
+	
+
+	$('#SortEmployeesSelect').change(function() {
+		var servletURL = $(this).find(':selected').val();
+		
+		if (servletURL.length > 0) {
+			document.location.href = servletURL;
+		}
+	});
+
+	$(function() {
+		$('#dialog-confirm').dialog({
+			autoOpen: false,
+			resizable: false,
+			height: 'auto',
+			width: 400,
+			modal: true,
+			buttons: {
+				'Delete': function() {
+					var url = $('#DeleteEmployeeHref').attr('href');
+					
+					HttpRequest.deleteEmployee(url)
+						.then(function(data) {
+							console.log(data);
+						},
+			            function(data) {
+			                // TODO: Servlet deletes employee but error function is executed.
+							console.log(data);
+						});
+
+					$(this).dialog('close');
+					document.location = url;
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+		
+		$('#DeleteEmployeeHref').on('click', function(event) {
+			event.preventDefault();  
+			$('#dialog-confirm').dialog('open');
+		});
+	});
+});

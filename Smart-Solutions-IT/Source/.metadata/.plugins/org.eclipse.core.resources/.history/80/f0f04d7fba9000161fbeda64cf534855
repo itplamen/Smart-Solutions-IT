@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:jsp="http://java.sun.com/xml/ns/javaee/jsp" xmlns:web="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.4">
+	<jsp-config>
+    	<taglib>
+      		<taglib-uri>http://jwd.bg/tags</taglib-uri>
+      		<taglib-location>/WEB-INF/custTags.tld</taglib-location>
+    	</taglib>
+  	</jsp-config>
+  	
+  	
+  	<!-- SERVLETS -->
+  	
+  	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>bg.jwd.servlets.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/LoginServlet</url-pattern>
+	</servlet-mapping>
+  	
+  	<servlet>
+		<servlet-name>AddEmployeeServlet</servlet-name>
+		<servlet-class>bg.jwd.servlets.AddEmployeeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AddEmployeeServlet</servlet-name>
+		<url-pattern>/Employee/Add</url-pattern>
+	</servlet-mapping>
+	
+  	<servlet>
+		<servlet-name>GetAllEmployeesServlet</servlet-name>
+		<servlet-class>bg.jwd.servlets.GetAllEmployeesServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GetAllEmployeesServlet</servlet-name>
+		<url-pattern>/Employees/All</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SearchEmployeesServlet</servlet-name>
+		<servlet-class>bg.jwd.servlets.SearchEmployeesServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SearchEmployeesServlet</servlet-name>
+		<url-pattern>/Employees/Search</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EmployeeProfileServlet</servlet-name>
+		<servlet-class>bg.jwd.servlets.EmployeeProfileServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EmployeeProfileServlet</servlet-name>
+		<url-pattern>/Employees/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- END -->
+  	
+  	
+  	<!-- JSP PAGES -->
+  	
+	<servlet>
+		<servlet-name>Home</servlet-name>
+		<jsp-file>/pages/Home.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Home</servlet-name>
+		<url-pattern>/Home</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>AddEmployee</servlet-name>
+		<jsp-file>/pages/AddEmployee.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AddEmployee</servlet-name>
+		<url-pattern>/AddEmployee</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Login</servlet-name>
+		<jsp-file>/pages/Login.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/Login</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ShowAllEmployees</servlet-name>
+		<jsp-file>/pages/ShowAllEmployees.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ShowAllEmployees</servlet-name>
+		<url-pattern>/ShowAllEmployees</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>SearchResults</servlet-name>
+		<jsp-file>/pages/SearchResults.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SearchResults</servlet-name>
+		<url-pattern>/Search/Results</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EmployeeProfile</servlet-name>
+		<jsp-file>/pages/EmployeeProfile.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EmployeeProfile</servlet-name>
+		<url-pattern>/EmployeeProfile</url-pattern>
+	</servlet-mapping>
+	
+</web-app>

@@ -1,0 +1,73 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import bg.jwd.contracts.IConstants;
+
+public class LoginServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	
+	private String username;
+	private String password;
+	private RequestDispatcher dispatcher;
+	
+	@Override
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		this.initialize(httpRequest);
+		
+		if (this.username.equals(IConstants.ADMIN_USERNAME) && this.password.equals(IConstants.ADMIN_PASSWORD)) {
+			httpRequest.getSession().setAttribute(IConstants.USERNAME_PARAMETER, this.username);
+			httpRequest.getSession().setAttribute(IConstants.PASSWORD_PARAMETER, this.password);
+			httpResponse.sendRedirect(IConstants.HOME_PAGE);
+		}
+		else {
+			httpRequest.getSession().setAttribute(IConstants.USERNAME_PARAMETER, IConstants.INVALID_PARAMETER);
+			httpRequest.getSession().setAttribute(IConstants.PASSWORD_PARAMETER, IConstants.INVALID_PARAMETER);
+			//httpResponse.sendRedirect(IConstants.LOGIN_PAGE + "#AuthenticationForm");
+			
+			this.dispatcher = httpRequest.getRequestDispatcher(IConstants.LOGIN_PAGE);
+			this.dispatcher.forward(httpRequest, httpResponse);
+		}
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		HttpSession session = httpRequest.getSession();
+		
+		boolean loggedIn = session != null && session.getAttribute(IConstants.USERNAME_PARAMETER) != null;
+       
+		if (loggedIn) {
+			
+		}
+		
+		this.initialize(httpRequest);
+		
+		if (this.username == null || this.username.isEmpty() || 
+				this.password == null || this.password.isEmpty()) {
+
+			this.dispatcher = httpRequest.getRequestDispatcher(IConstants.LOGIN_PAGE);
+			this.dispatcher.forward(httpRequest, httpResponse);
+		}	
+		else if (this.username.equals(IConstants.ADMIN_USERNAME) && this.password.equals(IConstants.ADMIN_PASSWORD)) {
+			// If admin is already logged in.
+			httpResponse.sendRedirect(IConstants.HOME_PAGE);
+		}
+	}
+	
+	private void initialize(HttpServletRequest httpRequest) {
+		this.username = httpRequest.getParameter(IConstants.USERNAME_PARAMETER);
+		this.password = httpRequest.getParameter(IConstants.PASSWORD_PARAMETER);
+	}
+}

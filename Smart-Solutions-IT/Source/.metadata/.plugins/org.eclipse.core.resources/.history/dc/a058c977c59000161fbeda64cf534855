@@ -1,0 +1,59 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+import java.security.InvalidParameterException;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Employee;
+
+public class GetAllEmployeesServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+			
+List<Employee> allEmployees = null;
+		
+		try {
+			allEmployees = Database.getAllEmployees();
+			
+			httpRequest.getSession().setAttribute(IConstants.ALL_EMPLOYEES_PARAMETER, allEmployees);
+			
+			RequestDispatcher dispatcher = httpRequest
+					.getRequestDispatcher(IConstants.SHOW_ALL_EMPLOYEES_PAGE);
+			
+			dispatcher.forward(httpRequest, httpResponse);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void deleteEmployee(HttpServletRequest httpRequest, HttpServletResponse httpResponse, 
+			String deleteEmployeeID) throws IOException {
+		int id = Integer.parseInt(deleteEmployeeID);
+		
+		try {
+			boolean isEmployeeDeleted = Database.deleteEmployee(id);
+			
+			if (isEmployeeDeleted) {
+				httpRequest.getSession().setAttribute(IConstants.ID_PARAMETER, IConstants.DELETED_PARAMETER);
+			}
+			
+			httpResponse.sendRedirect(IConstants.EMPLOYEE_PROFILE_PAGE);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

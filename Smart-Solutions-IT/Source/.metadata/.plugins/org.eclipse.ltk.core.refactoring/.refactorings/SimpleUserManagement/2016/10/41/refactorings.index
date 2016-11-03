@@ -1,0 +1,20 @@
+1475421767032	Rename field 'USERNAME'
+1475421786867	Rename field 'PASSWORD'
+1475434175053	Move 'Login.jsp' to 'WebContent'
+1475434477751	Move 'Login.jsp' to 'WEB-INF'
+1475434484368	Move 'Login.jsp' to 'pages'
+1475479516074	Rename resource 'Footer.jsp'
+1475479650999	Copy file
+1475479656924	Delete element
+1475479734544	Copy file
+1475479738100	Delete element
+1475479992319	Copy file
+1475480004369	Delete element
+1475480012057	Rename resource 'Header.jsp'
+1475480664385	Rename resource 'custTags.tld'
+1475500778642	Copy folder
+1475500782914	Delete element
+1475598697981	Copy elements
+1475598749690	Copy elements
+1475598758295	Copy file
+1475598778109	Copy package

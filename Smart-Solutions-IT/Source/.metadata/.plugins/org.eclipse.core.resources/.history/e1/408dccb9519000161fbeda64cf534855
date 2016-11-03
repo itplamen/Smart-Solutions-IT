@@ -1,0 +1,26 @@
+Message = (function ($) {
+	'use strict';
+	
+	var $errorImage = $('<img src="images/error.png"  alt="Error Image" />'),
+		$successImage = $('<img src="images/success.png" alt="Success Images />'),
+		$errorMessageBox = $('<div id="ErrorMessageBox"/>');
+	
+    function displayErrorMessage($form, messageText) {
+    	var $span = $('<span/>').html(messageText);
+    		
+    	$errorMessageBox
+    	.append($errorImage)
+    	.append($span)
+    	.insertBefore($form);
+    }
+    
+    function displaySuccessMessage($form, messageText) {
+		
+	}
+    
+    return {
+    	displayErrorMessage: displayErrorMessage
+    };
+    
+}(jQuery));
+    

@@ -1,0 +1,19 @@
+<%@tag import="bg.jwd.contracts.IConstants"%>
+
+<%@ attribute name="sectionTitle" %>
+
+<section>
+	<h2>${sectionTitle}</h2>
+
+	<form method="post" action="AuthenticationServlet" id="AuthenticationForm">
+		<label for="UsernameTextField">Username:</label>
+		<input type="text" id="UsernameTextField" name="<%= IConstants.USERNAME_PARAMETER %>" required />
+		<br/>
+					
+		<label for="PasswordTextField">Password:</label>
+		<input type="password" id="PasswordTextField" name="<%= IConstants.PASSWORD_PARAMETER %>" required /> 
+		<br/>
+					
+		<input type="submit" value="Login" id="LoginButton"/>
+	</form>
+</section>

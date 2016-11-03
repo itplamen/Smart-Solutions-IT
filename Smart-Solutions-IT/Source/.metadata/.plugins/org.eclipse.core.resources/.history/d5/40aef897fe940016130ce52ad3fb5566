@@ -1,0 +1,86 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Department;
+import bg.jwd.models.Employee;
+import bg.jwd.models.Gender;
+
+public class SubmitEmployeeServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	private static final String CONTENT_TYPE = "application/json";
+	private static final String ENCODING = "utf-8";
+	private static final String SUCCESS_RESPONSE = "{ \"success\": true }";
+	
+	private String firstName; 
+	private String lastName; 
+	private String jobPosition;
+	private String selectedDepartment;
+	private String selectedGender;
+	private String dateOfBirth; 
+	private String phoneNumber;
+	private String emailAddress;
+	
+	private Department department;
+	private Gender gender;
+	
+	@Override
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		this.initialize(httpRequest, httpResponse);
+		
+		try {
+			Employee newEmployee = new Employee(this.firstName, this.lastName, this.jobPosition, 
+					this.department, this.gender, this.dateOfBirth, this.phoneNumber, this.emailAddress); 
+					
+			Database.addEmployee(newEmployee);
+			
+			httpRequest.getSession().setAttribute(IConstants.PHONE_NUMBER_PARAMETER, this.phoneNumber);
+			httpRequest.getSession().setAttribute(IConstants.EMAIL_ADDRESS_PARAMETER, this.emailAddress);
+
+			httpResponse.sendRedirect(httpRequest.getContextPath() + IConstants.ADD_EMPLOYEE_PAGE);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void doPut(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		Employee updateEmployee = new Employee(this.firstName, this.lastName, this.jobPosition, 
+				this.department, this.gender, this.dateOfBirth, this.phoneNumber, this.emailAddress); 
+		
+		Database.updateEmployee(1, updateEmployee);
+		
+		httpResponse.setContentType(CONTENT_TYPE); 
+	    httpResponse.setCharacterEncoding(ENCODING);
+	    httpResponse.getWriter().println(SUCCESS_RESPONSE);
+	    
+	    
+	}
+	
+	private void initialize(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+		this.firstName = httpRequest.getParameter(IConstants.FIRST_NAME_PARAMETER);
+		this.lastName = httpRequest.getParameter(IConstants.LAST_NAME_PARAMETER);
+		this.jobPosition = httpRequest.getParameter(IConstants.JOB_POSITION_PARAMETER);
+		this.selectedDepartment = httpRequest.getParameter(IConstants.DEPARTMENT_PARAMETER);
+		this.selectedGender = httpRequest.getParameter(IConstants.GENDER_PARAMETER);
+		this.dateOfBirth = httpRequest.getParameter(IConstants.DATE_OF_BIRTH_PARAMETER);
+		this.phoneNumber = httpRequest.getParameter(IConstants.PHONE_NUMBER_PARAMETER);
+		this.emailAddress = httpRequest.getParameter(IConstants.EMAIL_ADDRESS_PARAMETER);
+		
+		this.department = Department.valueOf(this.selectedDepartment);
+		this.gender = Gender.valueOf(this.selectedGender);
+	}
+}

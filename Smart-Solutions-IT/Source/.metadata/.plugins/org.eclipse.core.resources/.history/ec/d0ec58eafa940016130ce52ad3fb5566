@@ -1,0 +1,67 @@
+var HttpRequest = (function($) {
+	'use strict';
+	
+	var headers = {
+			Accept: 'text/plain'
+		}, 
+		csrfParameter = '${_csrf.parameterName}',
+		csrfToken = '${_csrf.token}',
+		jsonParams = {},
+		httpRequest; 
+	
+    jsonParams['parentId'] = 1;
+    jsonParams[csrfParameter] = csrfToken;
+	
+	httpRequest = function(url, type) {
+		var $deferred = $.Deferred();
+			
+		$.ajax({
+			url: url,
+			type: type,
+			headers: { "X-CSRFToken": getCookie("csrftoken") },
+			cache: false,
+			data: jsonParams,
+			dataType: 'json',
+			contentType: 'application/json',
+			timeout: 15000,
+			success: function(data) {
+				$deferred.resolve(data);
+			},
+			error: function(error) {
+				$deferred.reject(error);
+			}
+		});
+		 
+		return $deferred.promise();
+	}
+	
+	function getCookie(c_name)
+	{
+	    if (document.cookie.length > 0)
+	    {
+	        c_start = document.cookie.indexOf(c_name + "=");
+	        if (c_start != -1)
+	        {
+	            c_start = c_start + c_name.length + 1;
+	            c_end = document.cookie.indexOf(";", c_start);
+	            if (c_end == -1) c_end = document.cookie.length;
+	            return unescape(document.cookie.substring(c_start,c_end));
+	        }
+	    }
+	    return "";
+	 }
+	
+	function deleteEmployee(url) {
+		empNo = 9870
+		return httpRequest(url + '/'  + empNo, 'DELETE');
+	}
+	
+	function updateEmployee(url) {
+		return httpRequest(url, 'PUT');
+	}
+	
+	return {
+		deleteEmployee: deleteEmployee,
+		updateEmployee: updateEmployee
+	};
+}(jQuery));

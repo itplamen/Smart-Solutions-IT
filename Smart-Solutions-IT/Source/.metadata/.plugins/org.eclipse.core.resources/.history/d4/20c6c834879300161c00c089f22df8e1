@@ -1,0 +1,8 @@
+<%@ attribute name="sectionTitle" %>
+
+<section>
+	<h2>${sectionTitle}</h2>
+	
+	
+		
+</section>

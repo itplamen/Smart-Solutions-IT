@@ -1,0 +1,11 @@
+<form method="post" action="AuthenticationServlet" id="AuthenticationForm">
+	<label for="UsernameTextField">Username:</label>
+	<input type="text" id="UsernameTextField" name="username" required />
+	<br/>
+				
+	<label for="PasswordTextField">Password:</label>
+	<input type="password" id="PasswordTextField" name="password" required /> 
+	<br/>
+				
+	<input type="submit" value="Login" id="LoginButton"/>
+</form>

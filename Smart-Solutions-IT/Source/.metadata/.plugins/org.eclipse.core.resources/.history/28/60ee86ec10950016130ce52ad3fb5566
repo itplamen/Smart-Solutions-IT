@@ -1,0 +1,151 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+import java.security.InvalidParameterException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Department;
+import bg.jwd.models.Employee;
+import bg.jwd.models.Gender;
+
+public class EmployeeProfileServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	private static final String CONTENT_TYPE = "application/json";
+	private static final String ENCODING = "utf-8";
+	private static final String SUCCESS_RESPONSE = "{ \"success\": true }";
+	private static final String ERROR_RESPONSE = "error";
+	
+	private String firstName; 
+	private String lastName; 
+	private String jobPosition;
+	private String selectedDepartment;
+	private String selectedGender;
+	private String dateOfBirth; 
+	private String phoneNumber;
+	private String emailAddress;
+	
+	private Department department;
+	private Gender gender;
+	
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String employeeID = httpRequest.getPathInfo().replace("/", "");
+		
+		 if (employeeID != null && !employeeID.isEmpty()) {	
+			 Employee employee = null;
+			 
+			try {
+				int id = Integer.parseInt(employeeID);
+				employee = Database.getEmployee(id);
+				
+				httpRequest.getSession().setAttribute(IConstants.SELECTED_EMPLOYEE_PARAMETER, employee);
+				
+				String path = getRequestedPath(httpRequest.getRequestURI());		
+				RequestDispatcher dispatcher = null;
+				
+				if (path.equals("/SmartSolutions/Employees/Profile")) {
+					dispatcher = httpRequest.getRequestDispatcher(IConstants.EMPLOYEE_PROFILE_PAGE);
+				}
+				else if (path.equals("/SmartSolutions/Employees/Update")) {
+					dispatcher = httpRequest.getRequestDispatcher(IConstants.UPDATE_EMPLOYEE_PAGE);
+				}
+				else {
+					throw new InvalidParameterException("Invalid path!");
+				}
+				
+				dispatcher.forward(httpRequest, httpResponse);
+			} 
+			catch (Exception e) { 
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Override
+	protected void doDelete(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String employeeID = httpRequest.getParameter(IConstants.DELETE_ID_PARAMETER);
+		int firstSlash = employeeID.indexOf("/", 1);
+		
+		employeeID = employeeID.substring(0, firstSlash);
+		
+		if (employeeID != null && !employeeID.isEmpty()) {	
+			int id = Integer.parseInt(employeeID);
+			
+			try {
+				boolean isEmployeeDeleted = Database.deleteEmployee(id);
+				
+				httpResponse.setContentType(CONTENT_TYPE); 
+			    httpResponse.setCharacterEncoding(ENCODING);
+				
+			    if (isEmployeeDeleted) {
+					httpRequest.getSession().setAttribute(IConstants.SELECTED_EMPLOYEE_PARAMETER, null);
+				    httpResponse.getWriter().println(SUCCESS_RESPONSE);
+				}
+				else {
+					// If you just response with invalid JSON, the ajax error function
+					// will be executed.
+					httpResponse.getWriter().println(ERROR_RESPONSE);
+				}
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}	
+	}
+	
+	@Override
+	protected void doPut(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		try {
+			this.initialize(httpRequest);
+			
+			String employeeID = httpRequest.getPathInfo().replace("/", "");
+			int id = Integer.parseInt(employeeID);
+			Employee updateEmployee = new Employee(this.firstName, this.lastName, this.jobPosition, 
+					this.department, this.gender, this.dateOfBirth, this.phoneNumber, this.emailAddress); 
+			
+			Database.updateEmployee(id, updateEmployee);
+		
+			httpResponse.setContentType(CONTENT_TYPE); 
+		    httpResponse.setCharacterEncoding(ENCODING);
+		    httpResponse.getWriter().println(SUCCESS_RESPONSE);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initialize(HttpServletRequest httpRequest) {
+		this.firstName = httpRequest.getParameter("updateName");
+		this.lastName = httpRequest.getParameter(IConstants.LAST_NAME_PARAMETER);
+		this.jobPosition = httpRequest.getParameter(IConstants.JOB_POSITION_PARAMETER);
+		this.selectedDepartment = httpRequest.getParameter(IConstants.DEPARTMENT_PARAMETER);
+		this.selectedGender = httpRequest.getParameter(IConstants.GENDER_PARAMETER);
+		this.dateOfBirth = httpRequest.getParameter(IConstants.DATE_OF_BIRTH_PARAMETER);
+		this.phoneNumber = httpRequest.getParameter(IConstants.PHONE_NUMBER_PARAMETER);
+		this.emailAddress = httpRequest.getParameter(IConstants.EMAIL_ADDRESS_PARAMETER);
+		
+		this.department = Department.valueOf(this.selectedDepartment);
+		this.gender = Gender.valueOf(this.selectedGender);
+	}
+	
+	private String getRequestedPath(String uri) {
+		int lastSlash = uri.lastIndexOf("/");
+		String path = uri.substring(0, lastSlash);
+		
+		return path;
+	}
+}

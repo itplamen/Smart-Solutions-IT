@@ -1,0 +1,11 @@
+package bg.jwd.data;
+
+import javax.servlet.http.HttpServletRequest;
+
+import bg.jwd.models.Employee;
+
+public class EmployeeUtils {
+	public static Employee createNewEmployeeModel(HttpServletRequest httpRequest) {
+		
+	}
+}

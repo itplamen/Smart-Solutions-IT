@@ -1,0 +1,47 @@
+package bg.jwd.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import bg.jwd.contracts.IConstants;
+import bg.jwd.database.Database;
+import bg.jwd.models.Employee;
+
+public class UpdateEmployeeServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) 
+			throws ServletException, IOException {
+		
+		String employeeID = httpRequest.getPathInfo().replace("/", "");
+		
+		 if (employeeID != null && !employeeID.isEmpty()) {	
+			 Employee employee = null;
+			 
+			try {
+				int id = Integer.parseInt(employeeID);
+				employee = Database.getEmployee(id);
+				
+				httpRequest.getSession().setAttribute(IConstants.SELECTED_EMPLOYEE_PARAMETER, employee);
+				
+				RequestDispatcher dispatcher = httpRequest
+						.getRequestDispatcher(IConstants.EMPLOYEE_PROFILE_PAGE + "?" + IConstants.ID_PARAMETER + "=" + id);
+				
+				dispatcher.forward(httpRequest, httpResponse);
+				
+				return;
+			} 
+			catch (Exception e) { 
+				e.printStackTrace();
+			}
+		}
+	}
+
+}

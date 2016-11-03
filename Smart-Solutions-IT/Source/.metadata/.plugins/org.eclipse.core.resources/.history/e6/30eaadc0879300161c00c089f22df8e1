@@ -1,0 +1,8 @@
+<%@ taglib prefix="ct" uri="http://jwd.bg/tags" %>
+
+<%@ attribute name="sectionTitle" %>
+
+<section>
+	<h2>${sectionTitle}</h2>
+	<ct:SubmitEmployeeForm/>
+</section>

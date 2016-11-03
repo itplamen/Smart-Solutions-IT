@@ -1,0 +1,51 @@
+<!-- 
+
+<%@tag import="bg.jwd.contracts.IConstants"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ct" uri="http://jwd.bg/tags" %>
+
+
+<section>
+       
+         
+        <%
+        	String username = (String)request.getSession().getAttribute("username");	
+        	String a = request.getRequestURI();
+        	System.out.println(a);
+        	System.out.println(username);
+        	
+        	if ((username == null || !username.equals(IConstants.ADMIN_USERNAME))) {
+        		if (!request.getRequestURI().equals(IConstants.HOME_PAGE)) {%>
+        			<p class="infoText">To perform Update and Delete operations:</p>
+        			
+        			<ul id="UpdateDeleteEmployeeStepsUL">
+        				<li>Search for certain employee by name, e-mail, telephone number ... </li>
+        				<li>Click on the result to see the employee's profile.</li>
+        				<li>Then click on the buttons 'Update' and 'Delete'.</li>
+        			</ul>
+        			
+        			<p class="infoText">You need to be logged in as <span class="boldText">Administrator!</span></p>
+    				<p class="infoText">Username: <%= IConstants.ADMIN_USERNAME %>, 
+    				Password: <%= IConstants.ADMIN_PASSWORD %></p>	
+        		<%}
+        		
+        		if (request.getRequestURI().equals(IConstants.LOGIN_PAGE)) {%>
+        			<ct:LoginSection/>
+        		<%}
+    		}
+        	else if (username.equals(IConstants.ADMIN_USERNAME)) {
+        		if (request.getRequestURI().equals(IConstants.LOGIN_PAGE)) {%>
+        			<p class="infoText">You are already logged in as 
+        			<span class="boldText"><%= username %>!</span></p>	
+        		<%}
+        		if (request.getRequestURI().equals(IConstants.ADD_EMPLOYEE_PAGE)) {%>
+        			<ct:AddEmployeeSection/>
+        		<%}
+        	}
+        %>
+        
+        
+        
+</section>
+
+ -->

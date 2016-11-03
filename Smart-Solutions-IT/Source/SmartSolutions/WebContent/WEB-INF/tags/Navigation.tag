@@ -1,0 +1,18 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%@tag import="bg.jwd.contracts.IConstants"%>
+
+<c:set var="administrator" value="<%= request.getSession().getAttribute(IConstants.USERNAME_PARAMETER) %>" />
+
+<nav>
+    <ul>
+    	<li><a href="${pageContext.request.contextPath}<%= IConstants.HOME_PAGE %>">Home</a></li>
+    	<li><a href="${pageContext.request.contextPath}/Employees/All">Show all</a></li>
+    	
+    	<c:choose>
+    		<c:when test="${not empty administrator}">
+    			<li><a href="${pageContext.request.contextPath}<%= IConstants.ADD_EMPLOYEE_PAGE %>">Add</a></li>
+    		</c:when>
+    	</c:choose>	
+    </ul>
+</nav>

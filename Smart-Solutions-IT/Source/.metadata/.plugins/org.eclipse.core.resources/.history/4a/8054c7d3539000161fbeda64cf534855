@@ -1,0 +1,33 @@
+Message = (function ($) {
+	'use strict';
+	
+	var $errorImage = $('<img src="images/error.png"  alt="Error Image" />'),
+		$successImage = $('<img src="images/success.png" alt="Success Image" />'),
+		$errorMessageBox = $('<div class="errorMessageBox" />'),
+		$successMessageBox = $('<div class="successMessageBox" />');
+	
+    function displayErrorMessage($form, messageText) {
+    	var $span = $('<span/>').html(messageText);
+    		
+    	$errorMessageBox
+	    	.append($errorImage)
+	    	.append($span)
+	    	.insertBefore($form);
+    }
+    
+    function displaySuccessMessage($form, messageText) {
+		var $span = $('<span/>').html(messageText);
+		
+		$successMessageBox
+			.append($successImage)
+			.append($span)
+			.insertBefore($form);
+	}
+    
+    return {
+    	displayErrorMessage: displayErrorMessage,
+    	displaySuccessMessage: displaySuccessMessage
+    };
+    
+}(jQuery));
+    

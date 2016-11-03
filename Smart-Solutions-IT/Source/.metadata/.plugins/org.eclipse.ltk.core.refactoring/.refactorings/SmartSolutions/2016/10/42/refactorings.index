@@ -1,0 +1,54 @@
+1475971491007	Rename resource 'HomePage.jsp'
+1476007570801	Copy file
+1476007577282	Delete element
+1476007680028	Copy file
+1476007683839	Delete element
+1476012809455	Rename local variable 'getAllEmployees'
+1476014162893	Rename local variable 'employeeID'
+1476020727366	Rename resource 'Employee.jsp'
+1476020784543	Rename field 'EMPLOYEE_PAGE'
+1476031920234	Rename local variable 'getEmployee'
+1476033028442	Delete element
+1476047726834	Move 'Login.jsp' to 'tags'
+1476047733207	Copy file
+1476047736477	Delete element
+1476048298602	Copy file
+1476048312489	Delete element
+1476048375516	Move 5 resources to 'page-sections'
+1476048382756	Move 'LoginSection.tag' to 'page-sections'
+1476051483536	Delete element
+1476051489200	Delete element
+1476053634532	Rename local variable 'enteredUsernameLength'
+1476111189289	Delete element
+1476112592473	Rename resource 'Employees'
+1476112597466	Rename resource 'Employees.ta'
+1476113140841	Delete element
+1476173462774	Rename method 'addGenders'
+1476173471804	Rename method 'addDefauktGenders'
+1476179816902	Rename local variable 'getAllEmployees'
+1476182274800	Rename local variable 'getAllEmployees'
+1476222125752	Rename method 'isEmailAddressUnique'
+1476222139224	Rename method 'isEmailAddressAlreadyExist'
+1476223874068	Rename field 'INVALID_PARAMETE'
+1476224587625	Rename method 'isEmailAddressExists'
+1476261207817	Rename local variable 'isUnique'
+1476261995909	Rename local variable 'department'
+1476262033142	Rename local variable 'gender'
+1476273001133	Rename local variable 'employeeSearchParameter'
+1476273032989	Rename local variable 'employeeSearchParameter'
+1476273085361	Rename field 'MATCHED_PARAMETE'
+1476273394575	Rename local variable 'sortEmployeesBy'
+1476292105922	Rename local variable 'd'
+1476294877238	Rename local variable 'searchedEmployeeID'
+1476301965645	Rename type 'AuthenticationServlet'
+1476302975879	Rename type 'AuthenticationFilter'
+1476304370109	Rename resource 'EmployeeSection.tag'
+1476310767579	Delete element
+1476342941577	Rename local variable 'request'
+1476342949933	Rename local variable 'response'
+1476343037923	Rename local variable 'htppRequest'
+1476345923044	Rename local variable 'loggedIn'
+1476353785474	Rename resource 'Update.jsp'
+1476353914004	Rename resource 'UpdateEmployeeSection'
+1476537123563	Rename type 'LoginFilter'
+1476537201884	Rename local variable 'aHttpRequest'
